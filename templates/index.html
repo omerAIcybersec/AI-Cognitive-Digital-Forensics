@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omer Online Store - AI-DFP Secured</title>
+    <style>
+        body{font-family:Arial;margin:0;background:#f5f5f5}
+        header{background:#ff6f00;color:#fff;padding:15px;text-align:center; font-size: 24px; font-weight: bold;}
+        nav{background:#333;padding:10px;text-align:center}
+        nav a{color:#fff;margin:10px;text-decoration:none; cursor: pointer;}
+        nav a:hover{color:#ff6f00}
+        .container{padding:20px; max-width: 1000px; margin: auto;}
+        .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+        .card{background:#fff;padding:15px;border-radius:10px;text-align:center; box-shadow: 0 4px 8px rgba(0,0,0,0.1);}
+        .card img{width:100%;height:150px;object-fit:cover; border-radius: 5px;}
+        button{background:#ff6f00;color:#fff;border:none;padding:10px 20px;border-radius:5px;cursor:pointer; font-weight: bold;}
+        button:hover{background:#e66400}
+        input{padding:12px;width:60%;margin-bottom:15px; border: 1px solid #ccc; border-radius: 5px;}
+        .login-box{max-width:350px;margin:100px auto;background:#fff;padding:30px;border-radius:10px;text-align:center; box-shadow: 0 10px 25px rgba(0,0,0,0.1);}
+        #store-content{display:none;}
+        .alert-box{background: #ffebee; color: #c62828; padding: 10px; border-radius: 5px; margin-bottom: 10px; display: none;}
+    </style>
+</head>
+<body>
+
+<div id="login-page" class="login-box">
+    <h2 style="color: #333;">Omer Store Login</h2>
+    <div id="error" class="alert-box"></div>
+    <input type="email" id="email" placeholder="Email (admin@gmail.com)"><br>
+    <input type="password" id="password" placeholder="Password (1234)"><br>
+    <button onclick="login()">Enter Store</button>
+</div>
+
+<div id="store-content">
+    <header>Online Store 🛒</header>
+
+    <nav>
+        <a onclick="showSection('home')">Home</a>
+        <a onclick="showSection('products')">Shop Products</a>
+        <a onclick="showSection('contact')">Contact Support</a>
+           </nav>
+
+    <div class="container">
+        <div id="home">
+            <h2>Welcome Back, Omer,Abdullah and Uzair!</h2>
+            <p>Your shopping experience is now protected by <b>AI-Cognitive Forensics</b>.</p>
+            <img src="https://images.unsplash.com/photo-1472851294608-062f824d29cc" style="width: 100%; border-radius: 10px; margin-top: 20px;">
+        </div>
+
+        <div id="products" style="display:none">
+            <h2>Our Premium Products</h2>
+            
+            <form action="/search" method="GET">
+                <input type="text" name="query" id="search-input" placeholder="Search products (e.g. Headphones)...">
+                <button type="submit">Search</button>
+            </form>
+
+            <div class="products" id="product-list">
+                </div>
+        </div>
+
+        <div id="contact" style="display:none">
+            <h2>Contact Us</h2>
+            <p>Location: Chichawatni, Pakistan</p>
+            <p>Email: omer@cybersecurity.riphah.edu.pk</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // PRODUCT DATA
+    const products = [
+        {name:"Professional Headphones", price:5000, img:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e"},
+        {name:"Smart Watch v8", price:7500, img:"https://images.unsplash.com/photo-1523275335684-37898b6baf30"},
+        {name:"Mechanical Keyboard", price:3000, img:"https://images.unsplash.com/photo-1511467687858-23d96c32e4ae"},
+        {name:"Gaming Mouse", price:2000, img:"https://images.unsplash.com/photo-1527443224154-c4a3942d3acf"}
+    ];
+
+    // LOGIN LOGIC
+    function login(){
+        let email = document.getElementById("email").value;
+        let pass = document.getElementById("password").value;
+
+        if(email === "admin@gmail.com" && pass === "1234"){
+            document.getElementById("login-page").style.display = "none";
+            document.getElementById("store-content").style.display = "block";
+            displayProducts(products);
+            // Session persistence (Simple)
+            localStorage.setItem("isLoggedIn", "true");
+        } else {
+            let errorDiv = document.getElementById("error");
+            errorDiv.style.display = "block";
+            errorDiv.innerText = "Invalid Email or Password!";
+        }
+    }
+
+    // CHECK LOGIN STATUS ON LOAD
+    window.onload = function() {
+        if(localStorage.getItem("isLoggedIn") === "true") {
+            document.getElementById("login-page").style.display = "none";
+            document.getElementById("store-content").style.display = "block";
+            displayProducts(products);
+        }
+    }
+
+    // DISPLAY PRODUCTS
+    function displayProducts(list){
+        let html = "";
+        list.forEach((p)=>{
+            html += `<div class='card'>
+                <img src='${p.img}'>
+                <h3>${p.name}</h3>
+                <p>Rs ${p.price}</p>
+                <button>Add to Cart</button>
+            </div>`;
+        });
+        document.getElementById("product-list").innerHTML = html;
+    }
+
+    // NAVIGATION
+    function showSection(sec){
+        document.getElementById('home').style.display = 'none';
+        document.getElementById('products').style.display = 'none';
+        document.getElementById('contact').style.display = 'none';
+        document.getElementById(sec).style.display = 'block';
+    }
+
+    // LOGOUT (Optional for testing)
+    function logout() {
+        localStorage.removeItem("isLoggedIn");
+        location.reload();
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-DFP | Forensic Admin Dashboard</title>
+    <style>
+        :root { --primary: #ff6f00; --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; }
+        
+        /* Header & Stats */
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 30px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--card); padding: 20px; border-radius: 12px; border-left: 5px solid var(--primary); text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .stat-card h3 { margin: 0; font-size: 0.9em; color: #888; text-transform: uppercase; }
+        .stat-card p { margin: 10px 0 0; font-size: 2em; font-weight: bold; color: var(--primary); }
+
+        /* Action Buttons */
+        .actions { margin-bottom: 20px; display: flex; gap: 10px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; text-decoration: none; transition: 0.3s; }
+        .btn-csv { background: #2e7d32; color: white; }
+        .btn-pdf { background: #1565c0; color: white; }
+        .btn-unblock { background: #43a047; color: white; padding: 5px 12px; font-size: 0.8em; text-decoration: none; border-radius: 4px; }
+        .btn:hover { opacity: 0.8; transform: translateY(-2px); }
+
+        /* Forensic Table */
+        .table-container { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #333; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #252525; color: var(--primary); padding: 15px; font-size: 0.85em; text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid #333; font-family: 'Courier New', monospace; font-size: 0.9em; }
+        tr:hover { background: #252525; }
+
+        /* Status Badges */
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
+        .badge-sqli { background: #c62828; color: white; }
+        .badge-dos { background: #f9a825; color: black; }
+        
+        @media print { .actions, header, .btn-unblock { display: none; } body { background: white; color: black; } .table-container { border: none; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div>
+            <h1 style="margin:0;">Forensic Dashboard 🛡️</h1>
+            <p style="color:#888; margin:5px 0 0;">AI-Cognitive Digital Forensics Platform (AI-DFP)</p>
+        </div>
+        <div style="text-align: right;">
+            <span style="color: #43a047;">● System: Online</span><br>
+            <small>Last Audit: {{ datetime }}</small>
+        </div>
+    </header>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Anomalies</h3>
+            <p id="total-threats">{{ logs|length }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Unique IPs Blocked</h3>
+            <p id="unique-ips">Calculating...</p>
+        </div>
+        <div class="stat-card">
+            <h3>Forensic Integrity</h3>
+            <p style="color: #43a047;">100%</p>
+        </div>
+    </div>
+
+    <div class="actions">
+        <a href="/export" class="btn btn-csv">📥 Export CSV Report</a>
+        <button onclick="window.print()" class="btn btn-pdf">🖨️ Print Forensic PDF</button>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Timestamp</th>
+                    <th>Source IP</th>
+                    <th>Anomaly Type</th>
+                    <th>Payload</th>
+                    <th>Action</th> </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log[0] }}</td>
+                    <td>{{ log[1] }}</td>
+                    <td>{{ log[2] }}</td>
+                    <td>
+                        <span class="badge {% if log[3] == 'SQLi' or 'AI' in log[3] %}badge-sqli{% else %}badge-dos{% endif %}">
+                            {{ log[3] }}
+                        </span>
+                    </td>
+                    <td style="color: #ffab40;"><code>{{ log[4] }}</code></td>
+                    <td>
+                        <a href="/unblock/{{ log[2] }}" class="btn-unblock" onclick="return confirm('Restore access for this IP?')">
+                            Unblock
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        const rows = document.querySelectorAll('table tbody tr');
+        const ips = new Set();
+        rows.forEach(row => {
+            ips.add(row.cells[2].innerText);
+        });
+        document.getElementById('unique-ips').innerText = ips.size;
+    };
+</script>
+
+</body>
+</html>
